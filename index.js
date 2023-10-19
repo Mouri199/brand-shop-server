@@ -38,7 +38,7 @@ async function run() {
         const result = await cursor.toArray()
         res.send(result)
     })
-
+ 
     app.get('/brands', async(req,res) => {
         const cursor = Brands.find()
         const result = await cursor.toArray()
