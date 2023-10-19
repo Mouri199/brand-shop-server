@@ -52,7 +52,7 @@ async function run() {
       res.send(result);
     })
 
-    app.post('/brands',async(req,res) =>{
+    app.post('/brands',async(req,res) =>{ 
         const addproduct = req.body;
         console.log(addproduct);
         const result = await addPro.insertOne(addproduct)
