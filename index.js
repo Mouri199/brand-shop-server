@@ -36,7 +36,7 @@ async function run() {
     app.get ('/addproducts' , async (req,res) => {
         const cursor = addPro.find()
         const result = await cursor.toArray()
-        res.send(result)
+        res.send(result) 
     })
  
     app.get('/brands', async(req,res) => {
