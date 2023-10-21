@@ -22,19 +22,20 @@ const client = new MongoClient(uri, {
     strict: true,
     deprecationErrors: true,
   },
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+  // useNewUrlParser: true,
+  // useUnifiedTopology: true,
   maxPoolSize: 10,
 });
 
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const addPro = client.db('addproductDB').collection('addproducts')
     const Brands = client.db('addproductDB').collection('brands')
     const BrandData = client.db ('addproductDB').collection('bDetails')
+    const Cart = client.db('addproductDB').collection('cart')
 
 
     app.get ('/addproducts' , async (req,res) => {
@@ -42,6 +43,23 @@ async function run() {
         const result = await cursor.toArray()
         res.send(result) 
     })
+
+    app.get ('/cart' , async (req,res) => {
+      const cursor = Cart.find()
+      const result = await cursor.toArray()
+      res.send(result) 
+  })
+
+ 
+    
+
+    // app.get('/cart' , async (req,res) =>{
+    //   const id = req.params.id;
+    //   const query ={_id: new ObjectId(id)}
+    // const result = await Cart.findOne(query)
+  
+    //   res.send(result)
+    // })
 
     app.get('/bDetails/:name', async (req,res) => {
       const name = req.params.name
@@ -51,21 +69,31 @@ async function run() {
     })
 
 
+
+
     app.get('/Details/:id', async(req,res) =>{ 
+      const id = req.params.id;
+      console.log(id);
+      const query = {_id: new ObjectId(id)}
+      const result = await BrandData.findOne(query)
+      res.send(result);
+    })
+    // app.get('/Detailsupdate/:id', async(req,res) =>{ 
+    //   const id = req.params.id;
+    //   console.log(id);
+    //   const query = {_id: new ObjectId(id)}
+    //   const result = await BrandData.findOne(query)
+    //   res.send(result);
+    // })
+    
+
+    app.get('/bDetails/:id', async(req,res) =>{ 
       const id = req.params.id;
       const query = {_id: new ObjectId(id)}
       // const result = await BrandData.find(query).toArray()
       const result = await BrandData.findOne(query)
       res.send(result);
     })
-
-    // app.get('/brDetails/:id', async(req,res) =>{ 
-    //   const id = req.params.id;
-    //   const query = {_id: new ObjectId(id)}
-    //   // const result = await BrandData.find(query).toArray()
-    //   const result = await BrandData.findOne(query)
-    //   res.send(result);
-    // })
 
 
     app.get('/bDetails', async(req,res) => {
@@ -88,12 +116,29 @@ async function run() {
       res.send(result);
     })
 
+
+    app.post('/cart',async(req,res) =>{
+      const addCart = req.body;
+      console.log(addCart);
+      const result = await Cart.insertOne(addCart)
+      res.send(result)
+    })
+
     app.post('/brands',async(req,res) =>{ 
         const addproduct = req.body;
         console.log(addproduct);
         const result = await addPro.insertOne(addproduct)
         res.send(result)
     })
+
+    app.delete('/cart/:id', async (req,res) =>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await Cart.deleteOne(query)
+      res.send(result)
+    })
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
