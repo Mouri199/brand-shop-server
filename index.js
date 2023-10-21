@@ -21,7 +21,10 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  maxPoolSize: 10,
 });
 
 async function run() {
@@ -31,6 +34,7 @@ async function run() {
 
     const addPro = client.db('addproductDB').collection('addproducts')
     const Brands = client.db('addproductDB').collection('brands')
+    const BrandData = client.db ('addproductDB').collection('bDetails')
 
 
     app.get ('/addproducts' , async (req,res) => {
@@ -38,6 +42,38 @@ async function run() {
         const result = await cursor.toArray()
         res.send(result) 
     })
+
+    app.get('/bDetails/:name', async (req,res) => {
+      const name = req.params.name
+      const query = {BrandName : {$eq :name}}
+      const result = await BrandData.find(query).toArray()
+      res.send(result)
+    })
+
+
+    app.get('/Details/:id', async(req,res) =>{ 
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      // const result = await BrandData.find(query).toArray()
+      const result = await BrandData.findOne(query)
+      res.send(result);
+    })
+
+    // app.get('/brDetails/:id', async(req,res) =>{ 
+    //   const id = req.params.id;
+    //   const query = {_id: new ObjectId(id)}
+    //   // const result = await BrandData.find(query).toArray()
+    //   const result = await BrandData.findOne(query)
+    //   res.send(result);
+    // })
+
+
+    app.get('/bDetails', async(req,res) => {
+      const cursor = BrandData.find()
+      const result = await cursor.toArray()
+      res.send(result)
+  })
+
  
     app.get('/brands', async(req,res) => {
         const cursor = Brands.find()
